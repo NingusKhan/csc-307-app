@@ -46,6 +46,10 @@ const removeUser = (user) => {
   }
 };
 
+const generateId = () => {
+  return Math.random().toString(36).substr(2, 9); // Generates a random string of 9 characters
+};
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
@@ -69,8 +73,9 @@ app.get("/users", (req, res) => {
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
-  addUser(userToAdd);
-  res.send();
+  userToAdd.id = generateId();
+  const addedUser = addUser(userToAdd);
+  res.status(201).send(addedUser);
 });
 
 app.delete("/users/:id", (req, res) => {
@@ -78,7 +83,7 @@ app.delete("/users/:id", (req, res) => {
   const user = { id };
   const result = removeUser(user);
   if (result) {
-    res.sendStatus(200);
+    res.sendStatus(204);
   } else {
     res.sendStatus(404);
   }

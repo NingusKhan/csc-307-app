@@ -18,24 +18,43 @@ function MyApp() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(person)
-    });
+    }).then(response => {
+        if (response.status === 201) {
+          return response.json()
+        } else {
+          throw new Error('Failed to add user')
+        }
+      });
 
     return promise;
   }
 
   function updateList(person) {
     postUser(person)
-      .then(() => setCharacters([...characters, person]))
+      .then(newUser=> {setCharacters([...characters, newUser])})
       .catch((error) => {
         console.log(error);
       });
   }
 
   function removeOneCharacter(index) {
-    const updated = characters.filter((character, i) => {
-      return i !== index;
-    });
-    setCharacters(updated);
+    const characterToRemove = characters[index];
+    const url = `http://localhost:8000/users/${characterToRemove.id}`;
+
+    fetch(url, { method: "DELETE" })
+      .then(response => {
+        if (response.status === 204) {
+          const updated = characters.filter((_, i) => i !== index);
+          setCharacters(updated); // Update state only if deletion was successful
+        } else if (response.status === 404) {
+          console.error("User not found.");
+        } else {
+          throw new Error('Failed to delete user');
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   useEffect(() => {
