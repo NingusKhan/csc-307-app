@@ -39,7 +39,7 @@ function MyApp() {
 
   function removeOneCharacter(index) {
     const characterToRemove = characters[index];
-    const url = `http://localhost:8000/users/${characterToRemove.id}`;
+    const url = `http://localhost:8000/users/${characterToRemove._id}`;
 
     fetch(url, { method: "DELETE" })
       .then(response => {
